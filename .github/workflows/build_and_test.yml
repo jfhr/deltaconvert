@@ -12,7 +12,6 @@ jobs:
       - name: npm ci and build
         run: |
           npm install
-          npm run build
       - uses: actions/upload-artifact@main
         with:
           name: package artifacts
