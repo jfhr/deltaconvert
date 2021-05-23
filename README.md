@@ -1,11 +1,15 @@
 # deltaconvert
 
+[![Node.js CI](https://github.com/jfhr/deltaconvert/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/jfhr/deltaconvert/actions/workflows/build_and_test.yml)
+
 Convert [quill delta](https://quilljs.com/docs/delta/) objects to and from plain text, HTML, and 
 [NPF](https://github.com/tumblr/docs/blob/master/npf-spec.md).
 
 ## Installation
 
-TBA
+```shell
+npm install deltaconvert
+```
 
 ## Example
 
@@ -24,3 +28,39 @@ deltaToHtml({
  * <p><b>Gandalf</b> the <span style="color:#cccccc;">Grey</span></p>
  */
 ```
+
+## Reference
+
+### `deltaToHtml`
+
+Convert a delta object to html. The resulting HTML can be inserted into an existing website, it will have no `<html>`, 
+`<body>`, etc. tags. `{insert: {delimiter:true}}` objects will be converted to `<hr>` tags.
+**Videos aren't supported yet**.
+
+### `deltaToNpf`
+
+Convert a delta object to tumblr's NPF format. Headings of level >2 will be converted to bold text. Images will be
+inserted without any size information. **Videos aren't supported yet**.
+
+### `deltaToText`
+
+Convert a delta object to plain text. Formatting, images, etc. will be ignored.
+
+### `htmlToDelta`
+
+Convert a html document or snippet to a quill delta document. Note that **only inline styles are supported**. 
+`<style>` tags and external stylesheets will be ignored. `<hr>` tags will be converted to `{insert: {delimiter: true}}`
+objects. **Videos aren't supported yet**.
+
+### `npfToDelta`
+
+Convert a tumblr NPF to a quill delta. **Blog references and videos aren't supported yet**.
+
+### `textToDelta`
+
+Convert plain text to a delta object with no formatting information.
+
+## Contributing
+
+If you want to request a feature, report a bug, or contribute in some other way, please file an issue here.
+Thanks!
