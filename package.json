@@ -1,7 +1,22 @@
 {
   "name": "deltaconvert",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "jfhr",
+    "email": "me@jfhr.de",
+    "url": "https://github.com/jfhr"
+  },
+  "bugs": {
+    "url": "https://github.com/jfhr/deltaconvert/issues"
+  },
+  "description": "Convert quill delta to and from other formats",
+  "homepage": "https://github.com/jfhr/deltaconvert",
+  "keywords": ["quill-delta", "quill"],
+  "repository": {
+    "url": "https://github.com/jfhr/deltaconvert",
+    "type": "git"
+  },
   "scripts": {
     "test": "nyc ava"
   },
