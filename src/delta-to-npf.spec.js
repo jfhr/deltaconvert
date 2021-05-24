@@ -286,6 +286,45 @@ test('color', t => {
     t.deepEqual(actual, expected);
 });
 
+test('multiple color', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: "Celebrate Pride Month",
+                formatting: [
+                    {
+                        start: 0,
+                        end: 10,
+                        type: "color",
+                        hex: "#2d70f6"
+                    },
+                    {
+                        start: 10,
+                        end: 15,
+                        type: "color",
+                        hex: "#3bf62d"
+                    },
+                    {
+                        start: 15,
+                        end: 21,
+                        type: "color",
+                        hex: "#ff492f"
+                    }
+                ]
+            }
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: "Celebrate ", attributes: {color: "#2d70f6"}},
+            {insert: "Pride", attributes: {color: "#3bf62d"}},
+            {insert: " Month", attributes: {color: "#ff492f"}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
 test('heading 3', t => {
     const expected = {
         content: [
@@ -325,6 +364,27 @@ test('video', t => {
     const actual = deltaToNpf({
         ops: [
             {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('video type detection', t => {
+    const expected = {
+        "content": [
+            {"type": "video", "media": { "type": "video/mp4", "url": "https://example.com/video.mp4" }},
+            {"type": "video", "media": { "type": "video/webp", "url": "https://example.com/video.webp" }},
+            {"type": "video", "media": { "type": "video/ogg", "url": "https://example.com/video.ogg" }},
+            {"type": "video", "url": "https://example.com/video" },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: {video: 'https://example.com/video.webp'}},
+            {insert: {video: 'https://example.com/video.ogg'}},
+            {insert: {video: 'https://example.com/video'}},
             {insert: '\n'},
         ]
     });
