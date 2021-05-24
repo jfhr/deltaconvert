@@ -83,6 +83,24 @@ function deltaToNpf(delta) {
                     type: guessImageMimeType(inline.insert.image),
                 });
             }
+            else if (inline.insert.video) {
+                const type = guessVideoMimeType(inline.insert.video);
+                // Can't determine type, use the url directly instead
+                if (type === 'video') {
+                    npf.push({
+                        type: 'video',
+                        url: inline.insert.video
+                    });
+                } else {
+                    npf.push({
+                        type: 'video',
+                        media: {
+                            url: inline.insert.video,
+                            type,
+                        }
+                    });
+                }
+            }
         }
 
         if (text !== '') {
@@ -147,6 +165,26 @@ function guessImageMimeType(url) {
         return 'image/gif';
     }
     return 'image';
+}
+
+/**
+ * Guess video MIME type based on url file extension.
+ * If unsuccessful, returns 'video'
+ * @param url {string}
+ * @return {string}
+ */
+function guessVideoMimeType(url) {
+    url = url.toLowerCase();
+    if (url.endsWith('.mp4')) {
+        return 'video/mp4'
+    }
+    if (url.endsWith('.webp')) {
+        return 'video/webp';
+    }
+    if (url.endsWith('.ogg')) {
+        return 'video/ogg';
+    }
+    return 'video';
 }
 
 

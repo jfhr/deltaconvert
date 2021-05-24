@@ -309,3 +309,24 @@ test('heading 3', t => {
     });
     t.deepEqual(actual, expected);
 });
+
+test('video', t => {
+    const expected = {
+        "content": [
+            {
+                "type": "video",
+                "media": {
+                    "type": "video/mp4",
+                    "url": "https://example.com/video.mp4",
+                }
+            }
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});

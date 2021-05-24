@@ -271,3 +271,36 @@ test('underline + line-through', t => {
     t.deepEqual(actual, expected);
 });
 
+test('video with <source> subelement', t => {
+    const actual = htmlToDelta('<video><source src="https://example.com/video.mp4" type="video/mp4"></video>');
+    const expected = {
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('video with src attribute', t => {
+    const actual = htmlToDelta('<video src="https://example.com/video.mp4"></video>');
+    const expected = {
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('<iframe> with ql-video class', t => {
+    const actual = htmlToDelta('<iframe class="ql-video" src="https://example.com/video.mp4"></iframe>');
+    const expected = {
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
