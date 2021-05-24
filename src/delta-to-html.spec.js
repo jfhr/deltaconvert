@@ -191,7 +191,7 @@ test('#14 dividers', t => {
 });
 
 test('video', t => {
-    const expected = '<p><video><source src="https://example.com/video.mp4" type="video/mp4"></video></p>';
+    const expected = '<p><video src="https://example.com/video.mp4"></video></p>';
     const actual = deltaToHtml({
         ops: [
             {insert: {video: 'https://example.com/video.mp4'}},

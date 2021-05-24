@@ -10,6 +10,7 @@ function htmlToDelta(html) {
     let delta = new Delta();
     let attributeStack = [];
     let listType = null;
+    let lookForVideoSource = false;
     // Some HTML elements should be skipped entirely (e.g. head, style)
     // In this case, ignore will be set to the tagname of the ignored element
     /** @type {?string} */
@@ -51,6 +52,28 @@ function htmlToDelta(html) {
                         delta = delta.insert({image: elementAttributes.src}, imgAttributes);
                     }
                     return;
+                case 'video':
+                    // Case 1: video with inline src attribute
+                    if (elementAttributes.src !== undefined) {
+                        delta = delta.insert({video: elementAttributes.src}, merge(attributeStack));
+                        return;
+                    }
+                    // Case 2: video with <source> subelement
+                    lookForVideoSource = true;
+                    break;
+                case 'iframe':
+                    // Iframe containing video
+                    if (elementAttributes.class.includes('ql-video')) {
+                        delta = delta.insert({video: elementAttributes.src}, merge(attributeStack));
+                    }
+                    return;
+                case 'source':
+                    if (lookForVideoSource && elementAttributes.src !== undefined) {
+                        delta = delta.insert({video: elementAttributes.src}, merge(attributeStack));
+                        lookForVideoSource = false;
+                        return;
+                    }
+                    break;
 
                 // Non-singleton tags set certain variables here that will be used later
                 case 'ol':
@@ -171,6 +194,9 @@ function htmlToDelta(html) {
                 case 'ol':
                 case 'ul':
                     listType = null;
+                    break;
+                case 'video':
+                    lookForVideoSource = false;
                     break;
             }
 
