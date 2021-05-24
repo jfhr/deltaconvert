@@ -35,12 +35,12 @@ deltaToHtml({
 
 Convert a delta object to html. The resulting HTML can be inserted into an existing website, it will have no `<html>`, 
 `<body>`, etc. tags. `{insert: {delimiter:true}}` objects will be converted to `<hr>` tags.
-**Videos aren't supported yet**.
 
 ### `deltaToNpf`
 
 Convert a delta object to tumblr's NPF format. Headings of level >2 will be converted to bold text. Images will be
-inserted without any size information. **Videos aren't supported yet**.
+inserted without any size information. Videos will be inserted as `media` object if we can guess the mime type from the
+url, otherwise as plain links.
 
 ### `deltaToText`
 
@@ -50,11 +50,11 @@ Convert a delta object to plain text. Formatting, images, etc. will be ignored.
 
 Convert a html document or snippet to a quill delta document. Note that **only inline styles are supported**. 
 `<style>` tags and external stylesheets will be ignored. `<hr>` tags will be converted to `{insert: {delimiter: true}}`
-objects. **Videos aren't supported yet**.
+objects. `<iframe>`s with the `ql-video` class will be treated as videos.
 
 ### `npfToDelta`
 
-Convert a tumblr NPF to a quill delta. **Blog references and videos aren't supported yet**.
+Convert a tumblr NPF to a quill delta. **Blog references aren't supported yet**.
 
 ### `textToDelta`
 
