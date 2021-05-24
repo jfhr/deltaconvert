@@ -20,6 +20,14 @@ function npfToDelta(npf) {
             }
         } else if (content.type.startsWith('image')) {
             pushOp({insert: {image: content.url}});
+        } else if (content.type.startsWith('video')) {
+            if (content.url) {
+                pushOp({insert: {video: content.url}});
+            } else if (content.embed_url) {
+                pushOp({insert: {video: content.embed_url}});
+            } else if (content.media) {
+                pushOp({insert: {video: content.media.url}});
+            }
         }
     }
 
