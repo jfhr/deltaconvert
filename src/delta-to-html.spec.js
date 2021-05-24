@@ -179,7 +179,6 @@ test('#12 multiline separated formatted paragraphs', t => {
     t.deepEqual(actual, expected);
 });
 
-
 test('#14 dividers', t => {
     const expected = '<p><hr></p>';
     const actual = deltaToHtml({
@@ -190,3 +189,15 @@ test('#14 dividers', t => {
     });
     t.deepEqual(actual, expected);
 });
+
+test('video', t => {
+    const expected = '<p><video><source src="https://example.com/video.mp4" type="video/mp4"></video></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+

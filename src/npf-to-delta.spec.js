@@ -50,8 +50,10 @@ test('heading', t => {
         ops: [
             {insert: "New Post Forms Manifesto"},
             {insert: "\n", attributes: {header: 1}},
-            {insert: "There comes a moment in every company's life that they must redefine the rules...\n" +
-                    "We can choose to embrace this moment courageously, or we may choose to cower in fear.\n"}
+            {
+                insert: "There comes a moment in every company's life that they must redefine the rules...\n" +
+                    "We can choose to embrace this moment courageously, or we may choose to cower in fear.\n"
+            }
         ]
     };
     t.deepEqual(actual, expected);
@@ -261,6 +263,64 @@ test('color', t => {
             {insert: "Celebrate "},
             {insert: "Pride", attributes: {color: "#ff492f"}},
             {insert: " Month\n"},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('video with url', t => {
+    const actual = npfToDelta({
+        "content": [
+            {
+                "type": "video",
+                "url": "https://example.com/video.mp4",
+            }
+        ]
+    });
+    const expected = {
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('video with embed_url', t => {
+    const actual = npfToDelta({
+        "content": [
+            {
+                "type": "video",
+                "embed_url": "https://example.com/video.mp4",
+                "embed_iframe": "<iframe src=\"https://example.com/video.mp4\"></iframe>",
+            }
+        ]
+    });
+    const expected = {
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('video with media object', t => {
+    const actual = npfToDelta({
+        "content": [
+            {
+                "type": "video",
+                "media": {
+                    "type": "video/mp4",
+                    "url": "https://example.com/video.mp4",
+                }
+            }
+        ]
+    });
+    const expected = {
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
         ]
     };
     t.deepEqual(actual, expected);
