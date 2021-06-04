@@ -1,13 +1,17 @@
 # Changelog
 
-# v0.1.0
+# v0.2.1
 
-- Initial version
+- Slight changes to improve compatibility
+
+# v0.2.0
+
+- Added video support
 
 # v0.1.1
 
 - No changes
 
-# v0.2.0
+# v0.1.0
 
-- Added video support
+- Initial version
