@@ -18,14 +18,12 @@
 
 /**
  * Represents a block-level insert element with formatting.
+ * @property {InlineInsert[]} children
+ * @property {Object.<string, *>} attributes
  */
 class BlockInsert {
-    /** @type {InlineInsert[]} */
-    children = [];
-    /** @type {Object.<string, *>} */
-    attributes = {};
-
     constructor(attributes) {
+        this.children = [];
         this.attributes = attributes || {};
     }
 }
@@ -33,13 +31,10 @@ class BlockInsert {
 /**
  * Represents some inline content (text or embed) with formatting.
  * An inline insert is always the child of a block insert.
+ * @property {(string|Object.<string, *>)} insert
+ * @property {Object.<string, *>} attributes
  */
 class InlineInsert {
-    /** @type {Object.<string, *>} */
-    attributes = {};
-    /** @type {(string|Object.<string, *>)} */
-    insert;
-
     constructor(insert, attributes) {
         this.insert = insert;
         this.attributes = attributes || {};
