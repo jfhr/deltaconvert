@@ -34,7 +34,7 @@ deltaToHtml({
 ### `deltaToHtml`
 
 Convert a delta object to html. The resulting HTML can be inserted into an existing website, it will have no `<html>`, 
-`<body>`, etc. tags. `{insert: {delimiter:true}}` objects will be converted to `<hr>` tags.
+`<body>`, etc. tags. `{insert: {divider:true}}` objects will be converted to `<hr>` tags.
 
 ### `deltaToNpf`
 
@@ -49,7 +49,7 @@ Convert a delta object to plain text. Formatting, images, etc. will be ignored.
 ### `htmlToDelta`
 
 Convert a html document or snippet to a quill delta document. Note that **only inline styles are supported**. 
-`<style>` tags and external stylesheets will be ignored. `<hr>` tags will be converted to `{insert: {delimiter: true}}`
+`<style>` tags and external stylesheets will be ignored. `<hr>` tags will be converted to `{insert: {divider: true}}`
 objects. `<iframe>`s with the `ql-video` class will be treated as videos.
 
 ### `npfToDelta`
