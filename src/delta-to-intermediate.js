@@ -63,7 +63,15 @@ function deltaToIntermediate(delta) {
             } else if (op.insert.includes('\n')) {
                 // Handle one or multiple paragraphs of text.
                 // Note that the following insert might include additional block-level formatting for the last paragraph.
-                for (const paragraph of op.insert.split('\n')) {
+                let paras = op.insert.split('\n');
+
+                // First paragraph might still belong to previous block
+                if (paras[0] !== '' && lastBlock() !== null) {
+                    lastBlock().children.push(new InlineInsert(paras[0], op.attributes));
+                    paras = paras.slice(1);
+                }
+
+                for (const paragraph of paras) {
                     if (paragraph !== '') {
                         blocks.push(new BlockInsert(op.attributes));
                         lastBlock().children.push(new InlineInsert(paragraph, op.attributes));

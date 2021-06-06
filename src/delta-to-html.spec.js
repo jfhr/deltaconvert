@@ -25,6 +25,17 @@ test('inline styles', t => {
     t.deepEqual(actual, expected);
 });
 
+test('inline styles 2', t => {
+    const expected = ('<p><b>Gandalf</b> the Grey</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'Gandalf', attributes: {bold: true}},
+            {insert: ' the Grey\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
 test('color and italic', t => {
     const expected = '<p><i style="color:#cccccc;">Hello, world!</i></p>';
     const actual = deltaToHtml({
@@ -48,6 +59,20 @@ test('underline and line-through', t => {
             {insert: 'is ', attributes: {underline: true, strike: true}},
             {insert: 'a lie', attributes: {strike: true}},
             {insert: '\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('link', t => {
+    const expected = ('<p><a href="https://example.com">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com'}
+            },
+            {insert: ' for you\n'}
         ]
     });
     t.deepEqual(actual, expected);

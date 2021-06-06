@@ -179,6 +179,8 @@ function getInlineTagName(op) {
         return 'img';
     } else if (op.insert.video) {
         return 'video';
+    } else if (op.attributes.link) {
+        return 'a';
     } else if (op.insert.divider) {
         return 'hr';
     } else {
@@ -243,6 +245,8 @@ function getInlineHtmlAttributes(op) {
         result.src = op.insert.image;
     } else if (op.insert.video) {
         result.src = op.insert.video;
+    } else if (op.attributes.link) {
+        result.href = op.attributes.link;
     }
     if (op.attributes.alt) {
         result.alt = op.attributes.alt;
