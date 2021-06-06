@@ -18,7 +18,8 @@
     "type": "git"
   },
   "scripts": {
-    "test": "nyc ava"
+    "test": "nyc ava",
+    "test:watch": "ava --watch"
   },
   "dependencies": {
     "htmlparser2": "^6.1.0",
