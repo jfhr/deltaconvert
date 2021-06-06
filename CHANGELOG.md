@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.2.2
+
+- Fix handling of inline link insert ops
+
 # v0.2.1
 
 - Slight changes to improve compatibility
