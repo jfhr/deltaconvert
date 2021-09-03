@@ -46,6 +46,11 @@ url, otherwise as plain links.
 
 Convert a delta object to plain text. Formatting, images, etc. will be ignored.
 
+### `deltaToSsml`
+
+Convert a delta object to the [Speech Synthesis Markup Language](https://cloud.google.com/text-to-speech/docs/ssml#p).
+Images will be converted to elements containing the alt text. Other media and special elements will be ignored.
+
 ### `htmlToDelta`
 
 Convert a html document or snippet to a quill delta document. Note that **only inline styles are supported**. 
