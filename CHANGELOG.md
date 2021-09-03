@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.2.3
+
+- Add `deltaToSsml` 
+
 # v0.2.2
 
 - Fix handling of inline link insert ops
