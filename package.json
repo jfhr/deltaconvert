@@ -1,6 +1,6 @@
 {
   "name": "deltaconvert",
-  "version": "0.2.2",
+  "version": "0.3.0-alpha",
   "license": "Apache-2.0",
   "author": {
     "name": "jfhr",
@@ -16,6 +16,11 @@
   "repository": {
     "url": "https://github.com/jfhr/deltaconvert",
     "type": "git"
+  },
+  "main": "./index.js",
+  "exports": {
+    "import": "./index.mjs",
+    "require": "./index.js"
   },
   "scripts": {
     "test": "nyc ava",
