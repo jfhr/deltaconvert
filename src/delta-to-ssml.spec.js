@@ -37,7 +37,7 @@ test('inline text with emphasis 2', t => {
 });
 
 test('image', t => {
-    const expected = ('<speak><p>Alt text goes here</p></speak>');
+    const expected = ('<speak><p>Alt text goes here.</p></speak>');
     const actual = deltaToSsml({
         ops: [
             {
@@ -51,7 +51,7 @@ test('image', t => {
 });
 
 test('image link', t => {
-    const expected = ('<speak><p>Alt text goes here</p></speak>');
+    const expected = ('<speak><p>Alt text goes here.</p></speak>');
     const actual = deltaToSsml({
         ops: [
             {
