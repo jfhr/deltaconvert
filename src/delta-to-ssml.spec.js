@@ -139,3 +139,14 @@ test('blockquote', t => {
     t.deepEqual(actual, expected);
 });
 
+test('video', t => {
+    const expected = '<speak><p></p></speak>';
+    const actual = deltaToSsml({
+        ops: [
+            {insert: {video: 'https://example.com/video.mp4'}},
+            {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
