@@ -390,3 +390,73 @@ test('video type detection', t => {
     });
     t.deepEqual(actual, expected);
 });
+
+test('code', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: 'console.log("<3");',
+                formatting: [
+                    {
+                        start: 0,
+                        end: 18,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: 'console.log("<3");\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('multiline code', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: 'let a;', 
+                formatting: [
+                    {
+                        start: 0,
+                        end: 6,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+            {
+                type: "text",
+                text: 'let b;',
+                formatting: [
+                    {
+                        start: 0,
+                        end: 6,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+            {
+                type: "text",
+                text: 'let c;',
+                formatting: [
+                    {
+                        start: 0,
+                        end: 6,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: 'let a;\nlet b;\nlet c;\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
