@@ -304,3 +304,26 @@ test('<iframe> with ql-video class', t => {
     t.deepEqual(actual, expected);
 });
 
+test('code', t => {
+    const actual = htmlToDelta('<p><code>console.log("<3");</code></p>');
+    const expected = {
+        ops: [
+            {insert: 'console.log("<3");', attributes: {code: true}},
+            {insert: '\n\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('multiline code', t => {
+    const actual = htmlToDelta('<p><code>let a;\nlet b;\nlet c;</code></p>');
+    const expected = {
+        ops: [
+            {insert: 'let a;\nlet b;\nlet c;', attributes: {code: true}},
+            {insert: '\n\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+

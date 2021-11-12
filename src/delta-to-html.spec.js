@@ -226,3 +226,23 @@ test('video', t => {
     t.deepEqual(actual, expected);
 });
 
+test('code', t => {
+    const expected = '<p><code>console.log("<3");</code></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'console.log("<3");\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('multiline code', t => {
+    const expected = '<p><code>let a;</code></p><p><code>let b;</code></p><p><code>let c;</code></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'let a;\nlet b;\nlet c;\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
