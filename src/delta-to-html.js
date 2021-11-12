@@ -183,6 +183,8 @@ function getInlineTagName(op) {
         return 'a';
     } else if (op.insert.divider) {
         return 'hr';
+    } else if (op.attributes.code) {
+        return 'code';
     } else {
         return 'span';
     }

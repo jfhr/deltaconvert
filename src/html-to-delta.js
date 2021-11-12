@@ -100,6 +100,10 @@ function htmlToDelta(html) {
                     if (elementAttributes.href !== undefined) {
                         deltaAttributes.link = elementAttributes.href;
                     }
+                    break;
+                case 'code':
+                    deltaAttributes.code = true;
+                    break;
             }
 
             const style = elementAttributes.style;
