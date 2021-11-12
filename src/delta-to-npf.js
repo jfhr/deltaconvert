@@ -54,6 +54,8 @@ function deltaToNpf(delta) {
         let text = '';
         /** @type NpfFormatting[] */
         let formatting = [];
+        /** @type 'code' */
+        let subtypeFromInline = null;
 
         for (const inline of block.children) {
             // Handle text with inline formatting
@@ -73,6 +75,9 @@ function deltaToNpf(delta) {
                 }
                 if (inline.attributes.link) {
                     formatting.push({start, end, type: 'link', url: inline.attributes.link});
+                }
+                if (inline.attributes.code) {
+                    formatting.push({start, end, color: '#e83e8c'});
                 }
             }
 
