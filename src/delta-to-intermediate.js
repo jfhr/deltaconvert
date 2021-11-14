@@ -89,6 +89,12 @@ function deltaToIntermediate(delta) {
             lastBlock().children.push(new InlineInsert(op.insert, op.attributes));
         }
     }
+
+    // Normally we need block-level tags (e.h. <p>) to create linebreaks.
+    // But code blocks are wrapped in the <pre> tag, meaning that plain newlines are preserved.
+    // So two adjacent <pre> blocks can be merged in one with a newline in between.
+    mergeAdjacentCodeBlocks(blocks);
+
     return blocks;
 
     /**
@@ -100,6 +106,20 @@ function deltaToIntermediate(delta) {
             return null;
         }
         return blocks[blocks.length - 1];
+    }
+}
+
+/**
+ * @param blocks {BlockInsert[]}
+ */
+function mergeAdjacentCodeBlocks(blocks) {
+    for (let i = 0; i < blocks.length - 1; i++){
+        if (blocks[i].attributes['code-block'] && blocks[i + 1].attributes['code-block']) {
+            blocks[i].children.push(...blocks[i + 1].children);
+            blocks.splice(i + 1, 1);
+            // Decrement index since the array has been changed
+            i--;
+        }
     }
 }
 
