@@ -306,6 +306,32 @@ test('lists', t => {
     t.deepEqual(actual, expected);
 });
 
+test('adjacent ordered and unordered lists', t => {
+    const actual = htmlToDelta(
+        '<h1>Sward\'s Shopping List</h1>' +
+        '<ol>' +
+        '<li>Sword</li>' +
+        '<li>Candy</li>' +
+        '</ol>' +
+        '<ul>' +
+        '<li>Death</li>' +
+        '</ul>'
+    );
+    const expected = {
+        ops: [
+            {insert: "Sward's Shopping List"},
+            {insert: "\n", attributes: {header: 1}},
+            {insert: "Sword"},
+            {insert: "\n", attributes: {list: "ordered"}},
+            {insert: "Candy"},
+            {insert: "\n", attributes: {list: "ordered"}},
+            {insert: "Death"},
+            {insert: "\n", attributes: {list: "bullet"}}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('#16 <em> tags', t => {
     const actual = htmlToDelta('<p><em>Hello</em></p>');
     const expected = {
