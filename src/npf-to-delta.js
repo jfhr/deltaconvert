@@ -3,117 +3,82 @@
  * @param npf {NpfObj}
  * @return {DeltaObj}
  */
+const Delta = require("quill-delta");
+
 function npfToDelta(npf) {
-    /** @type {DeltaInsertOperation[]} */
-    const ops = [];
+    let delta = new Delta();
 
     for (const content of npf.content) {
         if (content.type === 'text') {
-            for (const op of splitFormattedText(content)) {
-                pushOp(op);
-            }
-            const block = formatBlock(content);
-            if (block.attributes === lastOp().attributes) {
-                lastOp().insert += '\n';
-            } else {
-                pushOp(block);
-            }
+            delta = insertTextWithFormatting(content, delta);
+            delta = insertNewlineWithFormatting(content, delta);
         } else if (content.type.startsWith('image')) {
-            pushOp({insert: {image: content.url}});
+            delta = delta.insert({image: content.url});
         } else if (content.type.startsWith('video')) {
             if (content.url) {
-                pushOp({insert: {video: content.url}});
+                delta = delta.insert({video: content.url});
             } else if (content.embed_url) {
-                pushOp({insert: {video: content.embed_url}});
+                delta = delta.insert({video: content.embed_url});
             } else if (content.media) {
-                pushOp({insert: {video: content.media.url}});
+                delta = delta.insert({video: content.media.url});
             }
         }
     }
 
     if (lastOp() === null || typeof lastOp().insert !== 'string' || !lastOp().insert.endsWith('\n')) {
-        pushOp({insert: '\n'});
+        delta = delta.insert('\n');
     }
 
-    return {ops};
+    return {ops: delta.ops};
 
     /**
      * @return {null|DeltaInsertOperation}
      */
     function lastOp() {
-        if (ops.length === 0) {
+        if (delta.ops.length === 0) {
             return null;
         }
-        return ops[ops.length - 1];
-    }
-
-    /**
-     * Add a new operation to the list. If it is a text insert with the same attributes as the last operation,
-     * the two will be merged together.
-     * @param op {DeltaInsertOperation}
-     */
-    function pushOp(op) {
-        const previous = lastOp();
-        if (previous !== null && typeof previous.insert === 'string' && typeof op.insert === 'string'
-            && areAttributesEqual(previous.attributes, op.attributes)) {
-            if (previous.insert.endsWith('\n') || op.insert.startsWith('\n')) {
-                previous.insert += op.insert;
-            } else {
-                previous.insert += '\n' + op.insert;
-            }
-        } else {
-            ops.push(op);
-        }
-    }
-
-    /**
-     * Determines whether two delta attribute objects are equal (shallow comparison).
-     * * @return {boolean}
-     */
-    function areAttributesEqual(a1, a2) {
-        if (a1 === undefined || a2 === undefined) {
-            return a1 === a2;
-        } else {
-            return Object.keys(a1)
-                .concat(Object.keys(a2))
-                .every(key => a1[key] === a2[key]);
-        }
+        return delta.ops[delta.ops.length - 1];
     }
 }
 
 
 /**
- * Return a quill delta newline insert with the same formatting as the NPF content item.
+ * Add a newline insert with the same formatting as the NPF content item to the given delta,
+ * and return the resulting delta
  * @param content {NpfContent}
- * @return {?DeltaInsertOperation}
+ * @param delta {Delta}
+ * @return {Delta}
  */
-function formatBlock(content) {
+function insertNewlineWithFormatting(content, delta) {
     if (content.subtype === 'heading1') {
-        return {insert: '\n', attributes: {header: 1}};
+        return delta.insert('\n', {header: 1});
     } else if (content.subtype === 'heading2') {
-        return {insert: '\n', attributes: {header: 2}};
+        return delta.insert('\n', {header: 2});
     } else if (content.subtype === 'indented') {
-        const result = {insert: '\n', attributes: {blockquote: true}};
+        const result = {blockquote: true};
         if (content.indent_level) {
-            result.attributes.indent = content.indent_level;
+            result.indent = content.indent_level;
         }
-        return result;
+        return delta.insert('\n', result);
     } else if (content.subtype === 'ordered-list-item') {
-        return {insert: '\n', attributes: {list: 'ordered'}};
+        return delta.insert('\n', {list: 'ordered'});
     } else if (content.subtype === 'unordered-list-item') {
-        return {insert: '\n', attributes: {list: 'bullet'}};
+        return delta.insert('\n', {list: 'bullet'});
     }
-    return {insert: '\n'};
+    return delta.insert('\n');
 }
 
 /**
- * Convert a single NPF content item of type=text into one or more quill delta inserts.
+ * Convert a single NPF content item of type=text into one or more quill delta inserts,
+ * add them to the given delta and return the resulting delta.
  * @param content {NpfContent}
- * @return {DeltaInsertOperation[]}
+ * @param delta {Delta}
+ * @return {Delta}
  */
-function splitFormattedText(content) {
+function insertTextWithFormatting(content, delta) {
     if (content.formatting === undefined) {
-        return [{insert: content.text}];
+        return delta.insert(content.text);
     }
 
     /** @type number[] */
@@ -131,24 +96,15 @@ function splitFormattedText(content) {
 
     indexes.sort((a, b) => a - b);
 
-    /** @type {DeltaInsertOperation[]} */
-    const ops = [];
-
     for (let i = 1; i < indexes.length; i++) {
         const start = indexes[i - 1];
         const end = indexes[i];
         const formatHere = content.formatting.filter(f => f.start <= start && f.end >= end);
-
-        /** @type {DeltaInsertOperation} */
-        const op = {insert: content.text.substring(start, end)};
         const attributes = getAttributesFromFormatting(formatHere);
-        if (Object.keys(attributes).length > 0) {
-            op.attributes = attributes;
-        }
-        ops.push(op);
+        delta = delta.insert(content.text.substring(start, end), attributes);
     }
 
-    return ops;
+    return delta;
 }
 
 /**
