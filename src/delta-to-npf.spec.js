@@ -259,6 +259,38 @@ test('link', t => {
     t.deepEqual(actual, expected);
 });
 
+test('adjacent links', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: "to be or not to be",
+                formatting: [
+                    {
+                        start: 0,
+                        end: 5,
+                        type: "link",
+                        url: "https://tumblr.com"
+                    },
+                    {
+                        start: 5,
+                        end: 18,
+                        type: "link",
+                        url: "https://myspace.com"
+                    }
+                ]
+            }
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: "to be", attributes: {link: "https://tumblr.com"}},
+            {insert: " or not to be", attributes: {link: "https://myspace.com"}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
 test('color', t => {
     const expected = {
         content: [
