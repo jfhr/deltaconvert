@@ -40,7 +40,7 @@ const deltaToIntermediate = require("./delta-to-intermediate");
  */
 function deltaToNpf(delta) {
     /** @type {BlockInsert[]} */
-    const blocks = deltaToIntermediate(delta);
+    const blocks = deltaToIntermediate(delta, {mergeAdjacentCodeBlocks: false});
 
     /** @type NpfContent[] */
     const npf = [];
@@ -73,6 +73,9 @@ function deltaToNpf(delta) {
                 }
                 if (inline.attributes.link) {
                     formatting.push({start, end, type: 'link', url: inline.attributes.link});
+                }
+                if (inline.attributes.code) {
+                    formatting.push({start, end, color: '#e83e8c'});
                 }
             }
 
@@ -127,6 +130,8 @@ function deltaToNpf(delta) {
                 content.subtype = 'ordered-list-item';
             } else if (block.attributes.list === 'bullet') {
                 content.subtype = 'unordered-list-item';
+            } else if (block.attributes['code-block']) {
+                content.subtype = 'chat';
             }
 
             if (block.attributes.indent) {

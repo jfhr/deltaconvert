@@ -42,11 +42,23 @@ class InlineInsert {
 }
 
 /**
+ * @typedef {{mergeAdjacentCodeBlocks: boolean}} DeltaToIntermediateOptions
+ */
+
+/**
+ * @type {DeltaToIntermediateOptions}
+ */
+const DEFAULT_OPTIONS = {
+    mergeAdjacentCodeBlocks: true
+};
+
+/**
  * Convert a quill delta to our intermediate format.
  * @param delta
+ * @param options {DeltaToIntermediateOptions}
  * @return {BlockInsert[]}
  */
-function deltaToIntermediate(delta) {
+function deltaToIntermediate(delta, options = DEFAULT_OPTIONS) {
     const blocks = [];
 
     for (const op of delta.ops) {
@@ -62,13 +74,12 @@ function deltaToIntermediate(delta) {
                 }
             } else if (op.insert.includes('\n')) {
                 // Handle one or multiple paragraphs of text.
-                // Note that the following insert might include additional block-level formatting for the last paragraph.
-                let paras = op.insert.split('\n');
+                // Note that the following insert might include additional block-level formatting for the last paragraph
+                const paras = op.insert.split('\n');
 
                 // First paragraph might still belong to previous block
                 if (paras[0] !== '' && lastBlock() !== null) {
-                    lastBlock().children.push(new InlineInsert(paras[0], op.attributes));
-                    paras = paras.slice(1);
+                    lastBlock().children.push(new InlineInsert(paras.shift(), op.attributes));
                 }
 
                 for (const paragraph of paras) {
@@ -90,6 +101,14 @@ function deltaToIntermediate(delta) {
             lastBlock().children.push(new InlineInsert(op.insert, op.attributes));
         }
     }
+
+    // Normally we need block-level tags (e.h. <p>) to create linebreaks.
+    // But code blocks are wrapped in the <pre> tag, meaning that plain newlines are preserved.
+    // So two adjacent <pre> blocks can be merged in one with a newline in between.
+    if (options.mergeAdjacentCodeBlocks) {
+        mergeAdjacentCodeBlocks(blocks);
+    }
+
     return blocks;
 
     /**
@@ -101,6 +120,20 @@ function deltaToIntermediate(delta) {
             return null;
         }
         return blocks[blocks.length - 1];
+    }
+}
+
+/**
+ * @param blocks {BlockInsert[]}
+ */
+function mergeAdjacentCodeBlocks(blocks) {
+    for (let i = 0; i < blocks.length - 1; i++){
+        if (blocks[i].attributes['code-block'] && blocks[i + 1].attributes['code-block']) {
+            blocks[i].children.push(...blocks[i + 1].children);
+            blocks.splice(i + 1, 1);
+            // Decrement index since the array has been changed
+            i--;
+        }
     }
 }
 

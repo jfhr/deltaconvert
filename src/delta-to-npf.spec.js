@@ -259,6 +259,38 @@ test('link', t => {
     t.deepEqual(actual, expected);
 });
 
+test('adjacent links', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: "to be or not to be",
+                formatting: [
+                    {
+                        start: 0,
+                        end: 5,
+                        type: "link",
+                        url: "https://tumblr.com"
+                    },
+                    {
+                        start: 5,
+                        end: 18,
+                        type: "link",
+                        url: "https://myspace.com"
+                    }
+                ]
+            }
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: "to be", attributes: {link: "https://tumblr.com"}},
+            {insert: " or not to be", attributes: {link: "https://myspace.com"}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
 test('color', t => {
     const expected = {
         content: [
@@ -386,6 +418,110 @@ test('video type detection', t => {
             {insert: {video: 'https://example.com/video.ogg'}},
             {insert: {video: 'https://example.com/video'}},
             {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('code', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: 'console.log("<3");',
+                formatting: [
+                    {
+                        start: 0,
+                        end: 18,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: 'console.log("<3");\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('multiline code', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: 'let a;', 
+                formatting: [
+                    {
+                        start: 0,
+                        end: 6,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+            {
+                type: "text",
+                text: 'let b;',
+                formatting: [
+                    {
+                        start: 0,
+                        end: 6,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+            {
+                type: "text",
+                text: 'let c;',
+                formatting: [
+                    {
+                        start: 0,
+                        end: 6,
+                        color: '#e83e8c'
+                    }
+                ]
+            },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: 'let a;\nlet b;\nlet c;\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+
+test('code block', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                subtype: "chat",
+                text: 'let a;'
+            },
+            {
+                type: "text",
+                subtype: "chat",
+                text: 'let b;'
+            },
+            {
+                type: "text",
+                subtype: "chat",
+                text: 'let c;'
+            },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let c;'},
+            {insert: '\n', attributes: {'code-block': true}},
         ]
     });
     t.deepEqual(actual, expected);

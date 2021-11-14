@@ -1,6 +1,13 @@
 const test = require("ava");
 const deltaToHtml = require("./delta-to-html");
 
+test('empty', t => {
+    const expected = '';
+    const actual = deltaToHtml({
+        ops: []
+    });
+    t.deepEqual(actual, expected);
+});
 
 test('plain text', t => {
     const expected = '<p>Hello, world!</p>';
@@ -71,6 +78,48 @@ test('link', t => {
             {
                 insert: 'found this',
                 attributes: {link: 'https://example.com'}
+            },
+            {insert: ' for you\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('bold link', t => {
+    const expected = ('<p><a href="https://example.com" style="font-weight:bold;">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true}
+            },
+            {insert: ' for you\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('italic link', t => {
+    const expected = ('<p><a href="https://example.com" style="font-style:italic;">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', italic: true}
+            },
+            {insert: ' for you\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('bold and italic link', t => {
+    const expected = ('<p><a href="https://example.com" style="font-weight:bold;font-style:italic;">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true, italic: true}
             },
             {insert: ' for you\n'}
         ]
@@ -221,6 +270,58 @@ test('video', t => {
         ops: [
             {insert: {video: 'https://example.com/video.mp4'}},
             {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('code', t => {
+    const expected = '<p><code>console.log("<3");</code></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'console.log("<3");\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('multiline code', t => {
+    const expected = '<p><code>let a;</code></p><p><code>let b;</code></p><p><code>let c;</code></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'let a;\nlet b;\nlet c;\n', attributes: {code: true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('code block', t => {
+    const expected = '<pre><code>let a;\nlet b;\nlet c;</code></pre>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let c;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('multiple code blocks', t => {
+    const expected = '<pre><code>let a;\nlet b;</code></pre>' +
+        '<p>Put here some text explaining the code</p>' +
+        '<pre><code>let c;</code></pre>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'Put here some text explaining the code\nlet c;'},
+            {insert: '\n', attributes: {'code-block': true}},
         ]
     });
     t.deepEqual(actual, expected);

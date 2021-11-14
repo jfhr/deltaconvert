@@ -20,6 +20,49 @@ test('plain text', t => {
     t.deepEqual(actual, expected);
 });
 
+test('ignored elements', t => {
+    const actual = htmlToDelta('<head><title>foo</title><style>*{}</style></head>');
+    const expected = {
+        ops: [{insert: '\n'}]
+    };
+    t.deepEqual(actual, expected);
+});
+
+for (let i = 1; i < 7; i++) {
+    test(`header ${i}`, t => {
+        const actual = htmlToDelta(`<h${i}>Hello, world!</h${i}>`);
+        const expected = {
+            ops: [
+                {insert: 'Hello, world!'},
+                {insert: '\n', attributes: {header: i}},
+            ]
+        };
+        t.deepEqual(actual, expected);
+    });
+}
+
+test('bold text', t => {
+    const actual = htmlToDelta('<b>Gandalf</b>');
+    const expected = {
+        ops: [
+            {insert: 'Gandalf', attributes: {bold: true}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('italic text', t => {
+    const actual = htmlToDelta('<i>Gandalf</i>');
+    const expected = {
+        ops: [
+            {insert: 'Gandalf', attributes: {italic: true}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('nested element styles', t => {
     const actual = htmlToDelta('<strong>Gandalf <i>the</i></strong> <i>Grey</i>');
     const expected = {
@@ -43,6 +86,62 @@ test('inline styles', t => {
             {insert: ' the '},
             {insert: 'Grey', attributes: {color: '#cccccc'}},
             {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('bold link', t => {
+    const actual = htmlToDelta('<p><a href="https://example.com" style="font-weight:bold;">' +
+        'found this</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true}
+            },
+            {insert: ' for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('italic link', t => {
+    const actual = htmlToDelta('<p><a href="https://example.com" style="font-style:italic;">' +
+        'found this</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', italic: true}
+            },
+            {insert: ' for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('bold and italic link', t => {
+    const actual = htmlToDelta('<p><a href="https://example.com" style="font-weight:bold;font-style:italic;">' +
+        'found this</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true, italic: true}
+            },
+            {insert: ' for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('link without href', t => {
+    const actual = htmlToDelta('<p><a>found nothing</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found nothing for you\n\n'}
         ]
     };
     t.deepEqual(actual, expected);
@@ -74,6 +173,33 @@ test('image link', t => {
                 insert: {image: 'https://example.com/image.png'},
                 attributes: {alt: 'Alt text goes here.', link: 'https://example.com'}
             },
+            {
+                insert: '\n'
+            }
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('image without alt text', t => {
+    const actual = htmlToDelta('<img src="https://example.com/image.png">');
+    const expected = {
+        ops: [
+            {
+                insert: {image: 'https://example.com/image.png'},
+            },
+            {
+                insert: '\n'
+            }
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('image without src', t => {
+    const actual = htmlToDelta('<img>');
+    const expected = {
+        ops: [
             {
                 insert: '\n'
             }
@@ -174,6 +300,32 @@ test('lists', t => {
             {insert: "Candy"},
             {insert: "\n", attributes: {list: "ordered"}},
             {insert: "But especially don't forget:\nDeath, which is uncountable on this list."},
+            {insert: "\n", attributes: {list: "bullet"}}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('adjacent ordered and unordered lists', t => {
+    const actual = htmlToDelta(
+        '<h1>Sward\'s Shopping List</h1>' +
+        '<ol>' +
+        '<li>Sword</li>' +
+        '<li>Candy</li>' +
+        '</ol>' +
+        '<ul>' +
+        '<li>Death</li>' +
+        '</ul>'
+    );
+    const expected = {
+        ops: [
+            {insert: "Sward's Shopping List"},
+            {insert: "\n", attributes: {header: 1}},
+            {insert: "Sword"},
+            {insert: "\n", attributes: {list: "ordered"}},
+            {insert: "Candy"},
+            {insert: "\n", attributes: {list: "ordered"}},
+            {insert: "Death"},
             {insert: "\n", attributes: {list: "bullet"}}
         ]
     };
@@ -293,6 +445,16 @@ test('video with src attribute', t => {
     t.deepEqual(actual, expected);
 });
 
+test('misplaced <source> element', t => {
+    const actual = htmlToDelta('<source src="https://example.com/video.mp4" type="video/mp4">');
+    const expected = {
+        ops: [
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('<iframe> with ql-video class', t => {
     const actual = htmlToDelta('<iframe class="ql-video" src="https://example.com/video.mp4"></iframe>');
     const expected = {
@@ -303,4 +465,69 @@ test('<iframe> with ql-video class', t => {
     };
     t.deepEqual(actual, expected);
 });
+
+test('<iframe> without ql-video class', t => {
+    const actual = htmlToDelta('<iframe src="https://example.com/video.mp4"></iframe>');
+    const expected = {
+        ops: [
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('code', t => {
+    const actual = htmlToDelta('<p><code>console.log("<3");</code></p>');
+    const expected = {
+        ops: [
+            {insert: 'console.log("<3");', attributes: {code: true}},
+            {insert: '\n\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('multiline code', t => {
+    const actual = htmlToDelta('<p><code>let a;\nlet b;\nlet c;</code></p>');
+    const expected = {
+        ops: [
+            {insert: 'let a;\nlet b;\nlet c;', attributes: {code: true}},
+            {insert: '\n\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('code block', t => {
+    const actual = htmlToDelta('<pre><code>let a;\nlet b;\nlet c;</code></pre>');
+    const expected = {
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let c;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('multiple code blocks', t => {
+    const actual = htmlToDelta('<pre><code>let a;\nlet b;</code></pre>' +
+        '<p>Put here some text explaining the code</p>' +
+        '<pre><code>let c;</code></pre>');
+    const expected = {
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'Put here some text explaining the code\n\nlet c;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 
