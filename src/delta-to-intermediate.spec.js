@@ -2,8 +2,8 @@ const test = require("ava");
 const deltaToIntermediate = require("./delta-to-intermediate");
 
 
-function deltaToIntermediateNormalized(delta) {
-    const intermediate = deltaToIntermediate(delta);
+function deltaToIntermediateNormalized(delta, options) {
+    const intermediate = deltaToIntermediate(delta, options);
     return JSON.parse(JSON.stringify(intermediate));
 }
 
@@ -54,6 +54,46 @@ test('code block', t => {
             {insert: '\n', attributes: {'code-block': true}},
         ]
     });
+    t.deepEqual(actual, expected);
+});
+
+test('code block (merge disabled)', t => {
+    const expected = [
+        {
+            attributes: {
+                'code-block': true,
+            },
+            children: [
+                {
+                    attributes: {},
+                    insert: 'let a;',
+                },
+            ],
+        },
+        {
+            attributes: {
+                'code-block': true,
+            },
+            children: [
+                {
+                    attributes: {},
+                    insert: 'let b;',
+                },
+            ],
+        },
+        {
+            attributes: {},
+            children: [],
+        },
+    ];
+    const actual = deltaToIntermediateNormalized({
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    }, {mergeAdjacentCodeBlocks: false});
     t.deepEqual(actual, expected);
 });
 

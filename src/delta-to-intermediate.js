@@ -42,11 +42,23 @@ class InlineInsert {
 }
 
 /**
+ * @typedef {{mergeAdjacentCodeBlocks: boolean}} DeltaToIntermediateOptions
+ */
+
+/**
+ * @type {DeltaToIntermediateOptions}
+ */
+const DEFAULT_OPTIONS = {
+    mergeAdjacentCodeBlocks: true
+};
+
+/**
  * Convert a quill delta to our intermediate format.
  * @param delta
+ * @param options {DeltaToIntermediateOptions}
  * @return {BlockInsert[]}
  */
-function deltaToIntermediate(delta) {
+function deltaToIntermediate(delta, options = DEFAULT_OPTIONS) {
     const blocks = [];
 
     for (const op of delta.ops) {
@@ -93,7 +105,9 @@ function deltaToIntermediate(delta) {
     // Normally we need block-level tags (e.h. <p>) to create linebreaks.
     // But code blocks are wrapped in the <pre> tag, meaning that plain newlines are preserved.
     // So two adjacent <pre> blocks can be merged in one with a newline in between.
-    mergeAdjacentCodeBlocks(blocks);
+    if (options.mergeAdjacentCodeBlocks) {
+        mergeAdjacentCodeBlocks(blocks);
+    }
 
     return blocks;
 
