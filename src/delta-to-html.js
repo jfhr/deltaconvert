@@ -171,18 +171,18 @@ function getBlockTagName(op) {
  * @return {string}
  */
 function getInlineTagName(op) {
-    if (op.attributes.bold) {
-        return 'b';
-    } else if (op.attributes.italic) {
-        return 'i';
-    } else if (op.insert.image) {
+    if (op.insert.image) {
         return 'img';
     } else if (op.insert.video) {
         return 'video';
-    } else if (op.attributes.link) {
-        return 'a';
     } else if (op.insert.divider) {
         return 'hr';
+    } else if (op.attributes.link) {
+        return 'a';
+    } else if (op.attributes.bold) {
+        return 'b';
+    } else if (op.attributes.italic) {
+        return 'i';
     } else if (op.attributes.code) {
         return 'code';
     } else {
