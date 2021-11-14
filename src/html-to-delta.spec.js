@@ -91,6 +91,62 @@ test('inline styles', t => {
     t.deepEqual(actual, expected);
 });
 
+test('bold link', t => {
+    const actual = htmlToDelta('<p><a href="https://example.com" style="font-weight:bold;">' +
+        'found this</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true}
+            },
+            {insert: ' for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('italic link', t => {
+    const actual = htmlToDelta('<p><a href="https://example.com" style="font-style:italic;">' +
+        'found this</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', italic: true}
+            },
+            {insert: ' for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('bold and italic link', t => {
+    const actual = htmlToDelta('<p><a href="https://example.com" style="font-weight:bold;font-style:italic;">' +
+        'found this</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true, italic: true}
+            },
+            {insert: ' for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('link without href', t => {
+    const actual = htmlToDelta('<p><a>found nothing</a> for you</p>');
+    const expected = {
+        ops: [
+            {
+                insert: 'found nothing for you\n\n'}
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('image', t => {
     const actual = htmlToDelta('<img src="https://example.com/image.png" alt="Alt text goes here.">');
     const expected = {
