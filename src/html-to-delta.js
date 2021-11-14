@@ -15,6 +15,7 @@ function htmlToDelta(html) {
     // In this case, ignore will be set to the tagname of the ignored element
     /** @type {?string} */
     let ignore = null;
+    let isPre = false;
 
     const parser = new htmlparser2.Parser({
         onopentag(tagname, elementAttributes) {
@@ -101,8 +102,15 @@ function htmlToDelta(html) {
                         deltaAttributes.link = elementAttributes.href;
                     }
                     break;
+                case 'pre':
+                    isPre = true;
+                    break;
                 case 'code':
-                    deltaAttributes.code = true;
+                    if (isPre) {
+                        deltaAttributes['code-block'] = true;
+                    } else {
+                        deltaAttributes.code = true;
+                    }
                     break;
             }
 
@@ -149,7 +157,16 @@ function htmlToDelta(html) {
                 return;
             }
 
-            delta = delta.insert(text, merge(attributeStack));
+            // Inside a <pre> tag newlines are preserved, to represent them in a delta,
+            // we need a new block for every line.
+            if (isPre) {
+                for (const line of text.split('\n')) {
+                    delta = delta.insert(line);
+                    delta = ensureNewline(delta, merge(attributeStack));
+                }
+            } else {
+                delta = delta.insert(text, merge(attributeStack));
+            }
         },
         onclosetag(tagname) {
             /*
@@ -201,6 +218,9 @@ function htmlToDelta(html) {
                     break;
                 case 'video':
                     lookForVideoSource = false;
+                    break;
+                case 'pre':
+                    isPre = false;
                     break;
             }
 
