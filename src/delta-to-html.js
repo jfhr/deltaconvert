@@ -25,12 +25,17 @@ function deltaToHtml(delta) {
         const tags = renderBlockHtmlTags(block);
         html += tags.open;
 
-        for (const inline of block.children) {
+        for (let i = 0; i < block.children.length; i++) {
+            const inline = block.children[i];
             const inlineTags = renderInlineHtmlTags(inline);
             html += inlineTags.open;
 
             if (typeof inline.insert === 'string') {
                 html += inline.insert;
+                // In code blocks, we preserve newlines since they're wrapped in <pre> tags
+                if (block.attributes['code-block'] && i !== block.children.length - 1) {
+                    html += '\n';
+                }
             }
 
             html += inlineTags.close;
@@ -117,7 +122,7 @@ function renderInlineHtmlTags(inline) {
 /**
  * Render HTML open/close tags. Generic function for scenarios where block-level
  * or inline makes no difference.
- * @param tagName {string}
+ * @param tagName {string|string[]}
  * @param style {string}
  * @param attrs {Object.<string, string>}
  * @return {{open: string, close: string}}
@@ -127,8 +132,20 @@ function renderHtmlTagsGeneric(tagName, style, attrs) {
         attrs.style = style;
     }
 
+    // If there are multiple tag names, take the
+    // first one and put the rest away for later
+    /** @type string[] */
+    let additionalTagNames = [];
+    if (Array.isArray(tagName)) {
+        // noinspection JSValidateTypes
+        additionalTagNames = tagName.slice(1);
+        tagName = tagName[0];
+    }
+
     /** @type string */
     let open;
+    /** @type string */
+    let close;
 
     if (Object.keys(attrs).length === 0) {
         open = `<${tagName}>`;
@@ -140,18 +157,30 @@ function renderHtmlTagsGeneric(tagName, style, attrs) {
         open = `<${tagName}${attrString}>`;
     }
 
+    // Add close tag, unless the tag is self-closing
     const standalone = ['hr', 'br', 'img'];
     if (standalone.includes(tagName)) {
-        return {open, close: ''};
+        close = '';
+    } else {
+        close = `</${tagName}>`;
     }
-    return {open, close: `</${tagName}>`};
+
+    // Handle additional tag names, if there are any
+    for (const additionalTagName of additionalTagNames) {
+        open += `<${additionalTagName}>`;
+        if (!standalone.includes(tagName)) {
+            close = `</${additionalTagName}>` + close;
+        }
+    }
+
+    return {open, close};
 }
 
 
 /**
- * Get the correct HTML tag name for a block-level insert.
+ * Get the correct HTML tag name(s) for a block-level insert.
  * @param op {BlockInsert}
- * @return {string}
+ * @return {string|string[]}
  */
 function getBlockTagName(op) {
     if (op.attributes.blockquote) {
@@ -162,15 +191,17 @@ function getBlockTagName(op) {
         return `h${op.attributes.header}`;
     } else if (op.attributes.link) {
         return 'a';
+    } else if (op.attributes['code-block']) {
+        return ['pre', 'code'];
     } else {
         return 'p';
     }
 }
 
 /**
- * Get the correct HTML tag name for an inline insert.
+ * Get the correct HTML tag name(s) for an inline insert.
  * @param op {InlineInsert}
- * @return {string}
+ * @return {string|string[]}
  */
 function getInlineTagName(op) {
     if (op.insert.image) {
