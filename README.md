@@ -40,7 +40,8 @@ Convert a delta object to html. The resulting HTML can be inserted into an exist
 
 Convert a delta object to tumblr's NPF format. Headings of level >2 will be converted to bold text. Images will be
 inserted without any size information. Videos will be inserted as `media` object if we can guess the mime type from the
-url, otherwise as plain links.
+url, otherwise as plain links. Code blocks will be converted to text objects with subtype `chat`, which should be rendered
+with a monospace font.
 
 ### `deltaToText`
 
