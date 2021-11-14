@@ -181,6 +181,33 @@ test('image link', t => {
     t.deepEqual(actual, expected);
 });
 
+test('image without alt text', t => {
+    const actual = htmlToDelta('<img src="https://example.com/image.png">');
+    const expected = {
+        ops: [
+            {
+                insert: {image: 'https://example.com/image.png'},
+            },
+            {
+                insert: '\n'
+            }
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('image without src', t => {
+    const actual = htmlToDelta('<img>');
+    const expected = {
+        ops: [
+            {
+                insert: '\n'
+            }
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('paragraphs', t => {
     const actual = htmlToDelta(
         '<p>It is a truth universally acknowledged, that a single man in ' +
