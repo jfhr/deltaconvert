@@ -466,6 +466,16 @@ test('<iframe> with ql-video class', t => {
     t.deepEqual(actual, expected);
 });
 
+test('<iframe> without ql-video class', t => {
+    const actual = htmlToDelta('<iframe src="https://example.com/video.mp4"></iframe>');
+    const expected = {
+        ops: [
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('code', t => {
     const actual = htmlToDelta('<p><code>console.log("<3");</code></p>');
     const expected = {
