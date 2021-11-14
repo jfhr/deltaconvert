@@ -1,6 +1,13 @@
 const test = require("ava");
 const deltaToHtml = require("./delta-to-html");
 
+test('empty', t => {
+    const expected = '';
+    const actual = deltaToHtml({
+        ops: []
+    });
+    t.deepEqual(actual, expected);
+});
 
 test('plain text', t => {
     const expected = '<p>Hello, world!</p>';
