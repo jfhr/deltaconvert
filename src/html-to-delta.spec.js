@@ -498,4 +498,36 @@ test('multiline code', t => {
     t.deepEqual(actual, expected);
 });
 
+test('code block', t => {
+    const actual = htmlToDelta('<pre><code>let a;\nlet b;\nlet c;</code></pre>');
+    const expected = {
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let c;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('multiple code blocks', t => {
+    const actual = htmlToDelta('<pre><code>let a;\nlet b;</code></pre>' +
+        '<p>Put here some text explaining the code</p>' +
+        '<pre><code>let c;</code></pre>');
+    const expected = {
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'Put here some text explaining the code\n\nlet c;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 
