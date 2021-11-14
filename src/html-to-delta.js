@@ -63,7 +63,7 @@ function htmlToDelta(html) {
                     break;
                 case 'iframe':
                     // Iframe containing video
-                    if (elementAttributes.class.includes('ql-video')) {
+                    if (elementAttributes.class?.includes('ql-video')) {
                         delta = delta.insert({video: elementAttributes.src}, merge(attributeStack));
                     }
                     return;
