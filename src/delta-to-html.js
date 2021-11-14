@@ -39,7 +39,9 @@ function deltaToHtml(delta) {
         html += tags.close;
     }
 
-    html += renderListTagsIfRequired(lastBlock());
+    if (lastBlock() !== null) {
+        html += renderListTagsIfRequired(lastBlock());
+    }
 
     return html;
 
