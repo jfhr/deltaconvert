@@ -20,6 +20,49 @@ test('plain text', t => {
     t.deepEqual(actual, expected);
 });
 
+test('ignored elements', t => {
+    const actual = htmlToDelta('<head><title>foo</title><style>*{}</style></head>');
+    const expected = {
+        ops: [{insert: '\n'}]
+    };
+    t.deepEqual(actual, expected);
+});
+
+for (let i = 1; i < 7; i++) {
+    test(`header ${i}`, t => {
+        const actual = htmlToDelta(`<h${i}>Hello, world!</h${i}>`);
+        const expected = {
+            ops: [
+                {insert: 'Hello, world!'},
+                {insert: '\n', attributes: {header: i}},
+            ]
+        };
+        t.deepEqual(actual, expected);
+    });
+}
+
+test('bold text', t => {
+    const actual = htmlToDelta('<b>Gandalf</b>');
+    const expected = {
+        ops: [
+            {insert: 'Gandalf', attributes: {bold: true}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('italic text', t => {
+    const actual = htmlToDelta('<i>Gandalf</i>');
+    const expected = {
+        ops: [
+            {insert: 'Gandalf', attributes: {italic: true}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('nested element styles', t => {
     const actual = htmlToDelta('<strong>Gandalf <i>the</i></strong> <i>Grey</i>');
     const expected = {
