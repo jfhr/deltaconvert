@@ -492,3 +492,37 @@ test('multiline code', t => {
     });
     t.deepEqual(actual, expected);
 });
+
+
+test('code block', t => {
+    const expected = {
+        content: [
+            {
+                type: "text",
+                subtype: "chat",
+                text: 'let a;'
+            },
+            {
+                type: "text",
+                subtype: "chat",
+                text: 'let b;'
+            },
+            {
+                type: "text",
+                subtype: "chat",
+                text: 'let c;'
+            },
+        ]
+    };
+    const actual = deltaToNpf({
+        ops: [
+            {insert: 'let a;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let b;'},
+            {insert: '\n', attributes: {'code-block': true}},
+            {insert: 'let c;'},
+            {insert: '\n', attributes: {'code-block': true}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});

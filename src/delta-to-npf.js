@@ -40,7 +40,7 @@ const deltaToIntermediate = require("./delta-to-intermediate");
  */
 function deltaToNpf(delta) {
     /** @type {BlockInsert[]} */
-    const blocks = deltaToIntermediate(delta);
+    const blocks = deltaToIntermediate(delta, {mergeAdjacentCodeBlocks: false});
 
     /** @type NpfContent[] */
     const npf = [];
@@ -54,8 +54,6 @@ function deltaToNpf(delta) {
         let text = '';
         /** @type NpfFormatting[] */
         let formatting = [];
-        /** @type 'code' */
-        let subtypeFromInline = null;
 
         for (const inline of block.children) {
             // Handle text with inline formatting
@@ -132,6 +130,8 @@ function deltaToNpf(delta) {
                 content.subtype = 'ordered-list-item';
             } else if (block.attributes.list === 'bullet') {
                 content.subtype = 'unordered-list-item';
+            } else if (block.attributes['code-block']) {
+                content.subtype = 'chat';
             }
 
             if (block.attributes.indent) {
