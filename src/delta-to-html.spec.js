@@ -78,6 +78,48 @@ test('link', t => {
     t.deepEqual(actual, expected);
 });
 
+test('bold link', t => {
+    const expected = ('<p><a href="https://example.com" style="font-weight:bold;">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true}
+            },
+            {insert: ' for you\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('italic link', t => {
+    const expected = ('<p><a href="https://example.com" style="font-style:italic;">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', italic: true}
+            },
+            {insert: ' for you\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('bold and italic link', t => {
+    const expected = ('<p><a href="https://example.com" style="font-weight:bold;font-style:italic;">found this</a> for you</p>');
+    const actual = deltaToHtml({
+        ops: [
+            {
+                insert: 'found this',
+                attributes: {link: 'https://example.com', bold: true, italic: true}
+            },
+            {insert: ' for you\n'}
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
 test('image', t => {
     const expected = ('<p><img src="https://example.com/image.png" alt="Alt text goes here."></p>');
     const actual = deltaToHtml({
