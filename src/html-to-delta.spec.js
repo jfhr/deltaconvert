@@ -445,6 +445,16 @@ test('video with src attribute', t => {
     t.deepEqual(actual, expected);
 });
 
+test('misplaced <source> element', t => {
+    const actual = htmlToDelta('<source src="https://example.com/video.mp4" type="video/mp4">');
+    const expected = {
+        ops: [
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('<iframe> with ql-video class', t => {
     const actual = htmlToDelta('<iframe class="ql-video" src="https://example.com/video.mp4"></iframe>');
     const expected = {
