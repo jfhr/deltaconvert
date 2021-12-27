@@ -1,3 +1,4 @@
+const he = require("he");
 const deltaToIntermediate = require("./delta-to-intermediate");
 
 /**
@@ -31,7 +32,7 @@ function deltaToHtml(delta) {
             html += inlineTags.open;
 
             if (typeof inline.insert === 'string') {
-                html += inline.insert;
+                html += he.escape(inline.insert);
                 // In code blocks, we preserve newlines since they're wrapped in <pre> tags
                 if (block.attributes['code-block'] && i !== block.children.length - 1) {
                     html += '\n';
@@ -152,7 +153,8 @@ function renderHtmlTagsGeneric(tagName, style, attrs) {
     } else {
         let attrString = '';
         for (const name of Object.keys(attrs)) {
-            attrString += ` ${name}="${attrs[name]}"`;
+            const value = he.escape(attrs[name], {isAttributeValue: true});
+            attrString += ` ${name}="${value}"`;
         }
         open = `<${tagName}${attrString}>`;
     }
@@ -187,8 +189,18 @@ function getBlockTagName(op) {
         return 'blockquote';
     } else if (op.attributes.list) {
         return 'li';
-    } else if (op.attributes.header) {
-        return `h${op.attributes.header}`;
+    } else if (op.attributes.header === 1) {
+        return 'h1';
+    } else if (op.attributes.header === 2) {
+        return 'h2';
+    } else if (op.attributes.header === 3) {
+        return 'h3';
+    } else if (op.attributes.header === 4) {
+        return 'h4';
+    } else if (op.attributes.header === 5) {
+        return 'h5';
+    } else if (op.attributes.header === 6) {
+        return 'h6';
     } else if (op.attributes.link) {
         return 'a';
     } else if (op.attributes['code-block']) {

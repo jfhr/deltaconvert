@@ -193,12 +193,12 @@ test('paragraphs', t => {
 
 test('lists', t => {
     const expected = (
-        '<h1>Sward\'s Shopping List</h1>' +
+        '<h1>Sward&#x27;s Shopping List</h1>' +
         '<ol>' +
         '<li>Sword</li>' +
         '<li>Candy</li>' +
         '</ol>' +
-        '<p>But especially don\'t forget:</p>' +
+        '<p>But especially don&#x27;t forget:</p>' +
         '<ul>' +
         '<li>Death, which is uncountable on this list.</li>' +
         '</ul>'
@@ -253,6 +253,75 @@ test('#12 multiline separated formatted paragraphs', t => {
     t.deepEqual(actual, expected);
 });
 
+test('html injection via text', t => {
+    const expected = '<p>&lt;script&gt;alert(&quot;&lt;3&quot;);&lt;/script&gt;</p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: '<script>alert("<3");</script>'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('html injection via header attribute', t => {
+    const expected = '<p>Hello World</p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'Hello World', attributes: {header: '"><script>alert("<3");</script>'}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('html injection via color attribute', t => {
+    const expected = '<p><span style="color:&quot;&gt;&lt;script&gt;alert(&quot;&lt;3&quot;);&lt;/script&gt;;">Hello World</span></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'Hello World', attributes: {color: '"><script>alert("<3");</script>'}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('html injection via link target', t => {
+    const expected = '<p><a href="&quot;&gt;&lt;script&gt;alert(&quot;&lt;3&quot;);&lt;/script&gt;">Hello World</a></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: 'Hello World', attributes: {link: '"><script>alert("<3");</script>'}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('html injection via image', t => {
+    const expected = '<p><img src="&quot;&gt;&lt;script&gt;alert(&quot;&lt;3&quot;);&lt;/script&gt;"></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: {image: '"><script>alert("<3");</script>'}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('html injection via video', t => {
+    const expected = '<p><video src="&quot;&gt;&lt;script&gt;alert(&quot;&lt;3&quot;);&lt;/script&gt;"></video></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: {video: '"><script>alert("<3");</script>'}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('html injection via alt text', t => {
+    const expected = '<p><img src="https://example.com/image.png" alt="&quot;&gt;&lt;script&gt;alert(&quot;&lt;3&quot;);&lt;/script&gt;"></p>';
+    const actual = deltaToHtml({
+        ops: [
+            {insert: {image: 'https://example.com/image.png'}, attributes: {alt: '"><script>alert("<3");</script>'}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
 test('#14 dividers', t => {
     const expected = '<p><hr></p>';
     const actual = deltaToHtml({
@@ -276,7 +345,7 @@ test('video', t => {
 });
 
 test('code', t => {
-    const expected = '<p><code>console.log("<3");</code></p>';
+    const expected = '<p><code>console.log(&quot;&lt;3&quot;);</code></p>';
     const actual = deltaToHtml({
         ops: [
             {insert: 'console.log("<3");\n', attributes: {code: true}},

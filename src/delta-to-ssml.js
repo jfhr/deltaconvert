@@ -1,3 +1,4 @@
+const he = require('he');
 const deltaToIntermediate = require("./delta-to-intermediate");
 
 /**
@@ -37,12 +38,13 @@ function deltaToSsml(delta) {
  */
 function renderInline(inline) {
     if (typeof inline.insert === 'string') {
+        const text = he.escape(inline.insert);
         if (inline.attributes.bold) {
-            return `<emphasis>${inline.insert}</emphasis>`;
+            return `<emphasis>${text}</emphasis>`;
         }
-        return inline.insert;
+        return text;
     } else if (typeof inline.attributes.alt === 'string') {
-        return inline.attributes.alt;
+        return he.escape(inline.attributes.alt);
     }
     return '';
 }
