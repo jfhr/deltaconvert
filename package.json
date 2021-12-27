@@ -1,6 +1,6 @@
 {
   "name": "deltaconvert",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "author": {
     "name": "jfhr",
@@ -25,6 +25,7 @@
     "test:watch": "ava --watch"
   },
   "dependencies": {
+    "he": "^1.2.0",
     "htmlparser2": "^7.1.1",
     "quill-delta": "^4.2.2"
   },

@@ -1,5 +1,12 @@
 # Changelog
 
+# v1.0.0
+
+- This version prevents HTML injection through malformed deltas
+  - Add HTML entity and attribute encoding
+  - Add SSML entity encoding
+  - Adds a dependency on the `he` library (no second-level dependencies)
+
 # v0.2.3
 
 - Add `deltaToSsml` 

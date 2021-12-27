@@ -101,10 +101,10 @@ test('paragraphs', t => {
 test('lists', t => {
     const expected = (
         '<speak>' +
-        '<p>Sward\'s Shopping List</p>' +
+        '<p>Sward&#x27;s Shopping List</p>' +
         '<p>Sword</p>' +
         '<p>Candy</p>' +
-        '<p>But especially don\'t forget:</p>' +
+        '<p>But especially don&#x27;t forget:</p>' +
         '<p>Death, which is uncountable on this list.</p>' +
         '</speak>'
     );
@@ -145,6 +145,16 @@ test('video', t => {
         ops: [
             {insert: {video: 'https://example.com/video.mp4'}},
             {insert: '\n'},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
+test('ssml injection via text', t => {
+    const expected = '<speak><p>&lt;emphasis&gt;Boo!&lt;/emphasis&gt;</p></speak>';
+    const actual = deltaToSsml({
+        ops: [
+            {insert: '<emphasis>Boo!</emphasis>'},
         ]
     });
     t.deepEqual(actual, expected);
