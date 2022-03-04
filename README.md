@@ -66,6 +66,16 @@ Convert a tumblr NPF to a quill delta. **Blog references aren't supported yet**.
 
 Convert plain text to a delta object with no formatting information.
 
+### `htmlToNpf`
+
+Convert a html document or snippet to tumblr's NPF format. This is a shorthand for `deltaToNpf(htmlToDelta(...))`.
+
+### `npfToHtml`
+
+Convert a tumblr NPF to html. This is a shorthand for `deltaToNpf(htmlToDelta(...))`. Note that blockquotes with 
+`indent_level` > 1 will be converted to plain `<blockquote>`s, not nested `<blockquote>`s. This may change in a future 
+release.
+
 ## Contributing
 
 If you want to request a feature, report a bug, or contribute in some other way, please file an issue here.

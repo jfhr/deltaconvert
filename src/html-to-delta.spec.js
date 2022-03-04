@@ -1,5 +1,6 @@
 const test = require("ava");
 const htmlToDelta = require("./html-to-delta");
+const htmlToNpf = require("./html-to-npf");
 
 
 test('empty string', t => {
@@ -525,6 +526,26 @@ test('multiple code blocks', t => {
             {insert: '\n', attributes: {'code-block': true}},
             {insert: 'Put here some text explaining the code\n\nlet c;'},
             {insert: '\n', attributes: {'code-block': true}},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
+test('blockquotes', t => {
+    const actual = htmlToDelta(
+        '<blockquote>' +
+        '1: blockquote, not nested' +
+        '<blockquote>' +
+        '2: blockquote, nested' +
+        '</blockquote>' +
+        '</blockquote>'
+    )
+    const expected = {
+        ops: [
+            {insert: "1: blockquote, not nested"},
+            {insert: "\n", attributes: {blockquote: true}},
+            {insert: "2: blockquote, nested"},
+            {insert: "\n", attributes: {blockquote: true, indent: 1}},
         ]
     };
     t.deepEqual(actual, expected);

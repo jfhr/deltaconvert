@@ -4,6 +4,7 @@ const deltaToNpf = require("./src/delta-to-npf");
 const textToDelta = require("./src/text-to-delta");
 const htmlToDelta = require("./src/html-to-delta");
 const npfToDelta = require("./src/npf-to-delta");
+const htmlToNpf = require("./src/html-to-npf");
 
 module.exports = {
     deltaToText,
@@ -12,4 +13,5 @@ module.exports = {
     textToDelta,
     htmlToDelta,
     npfToDelta,
+    htmlToNpf,
 };
