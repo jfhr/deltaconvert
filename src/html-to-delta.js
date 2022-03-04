@@ -16,6 +16,7 @@ function htmlToDelta(html) {
     /** @type {?string} */
     let ignore = null;
     let isPre = false;
+    let blockquote = 0;
 
     const parser = new htmlparser2.Parser({
         onopentag(tagname, elementAttributes) {
@@ -111,6 +112,12 @@ function htmlToDelta(html) {
                     } else {
                         deltaAttributes.code = true;
                     }
+                    break;
+                case 'blockquote':
+                    if (blockquote > 0) {
+                        delta = ensureNewlineForBlockquote(delta, blockquote, merge(attributeStack));
+                    }
+                    blockquote++;
                     break;
             }
 
@@ -222,6 +229,10 @@ function htmlToDelta(html) {
                 case 'pre':
                     isPre = false;
                     break;
+                case 'blockquote':
+                    delta = ensureNewlineForBlockquote(delta, blockquote, merge(attributeStack));
+                    blockquote--;
+                    break;
             }
 
             // Pop the attributes that were pushed by the corresponding opening tag.
@@ -322,6 +333,22 @@ function ensureDoubleNewline(delta, attributes) {
         delta = delta.insert('\n', attributes);
     }
     return delta;
+}
+
+/**
+ * Adds a newline with the blockquote attribute and the given indent level, and the other given attributes.
+ * May be used at the beginning of a nested blockquote.
+ * @param delta {Delta}
+ * @param level {number}
+ * @param attributes {Object.<string, *>}
+ * @return {Delta}
+ */
+function ensureNewlineForBlockquote(delta, level, attributes) {
+    attributes.blockquote = true;
+    if (level > 1) {
+        attributes.indent = level - 1;
+    }
+    return ensureNewline(delta, attributes);
 }
 
 

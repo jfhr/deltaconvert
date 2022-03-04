@@ -1,5 +1,9 @@
 # Changelog
 
+# v1.1.0
+
+- Add `htmlToNpf` and `npfToHtml`
+
 # v1.0.0
 
 - This version prevents HTML injection through malformed deltas
