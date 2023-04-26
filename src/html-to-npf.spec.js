@@ -738,3 +738,53 @@ test('#17 ignore <style>', t => {
     };
     t.deepEqual(actual, expected);
 });
+
+test('#11 link in new paragraph', t => {
+    const actual = htmlToNpf('' +
+        '<p>\n' +
+        'btw, in case you ever need to convert some <i>html</i> into a <b><span style="color:#aaaaff">tumblr</span> post</b>:\n' +
+        '</p>\n' +
+        '<p>\n' +
+        '<a href="https://html2tumblr.jfhr.de">html2tumblr.jfhr.de</a>\n' +
+        '</p>\n');
+    const expected = {
+        content: [
+            {
+                type: "text",
+                text: "btw, in case you ever need to convert some html into a tumblr post:",
+                formatting: [
+                    {
+                        start: 43,
+                        end: 47,
+                        type: "italic",
+                    },
+                    {
+                        start: 55,
+                        end: 66,
+                        type: "bold",
+                    },
+                    {
+                        start: 55,
+                        end: 61,
+                        type: "color",
+                        hex: "#aaaaff",
+                    },
+                ]
+            },
+            {
+                type: "text",
+                text: "html2tumblr.jfhr.de",
+                formatting: [
+                    {
+                        start: 0,
+                        end: 19,
+                        type: "link",
+                        url: "https://html2tumblr.jfhr.de",
+                    }
+                ]
+            }
+        ]
+    };
+
+    t.deepEqual(actual, expected);
+})

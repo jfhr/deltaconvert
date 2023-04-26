@@ -218,6 +218,34 @@ test('lists', t => {
     t.deepEqual(actual, expected);
 });
 
+test('headings 1-6', t => {
+    const expected = (
+        '<h1>Level one</h1>' +
+        '<h2>Level two</h2>' +
+        '<h3>Level three</h3>' +
+        '<h4>Level four</h4>' +
+        '<h5>Level five</h5>' +
+        '<h6>Final level!</h6>'
+    );
+    const actual = deltaToHtml({
+        ops: [
+            {insert: "Level one"},
+            {insert: "\n", attributes: {header: 1}},
+            {insert: "Level two"},
+            {insert: "\n", attributes: {header: 2}},
+            {insert: "Level three"},
+            {insert: "\n", attributes: {header: 3}},
+            {insert: "Level four"},
+            {insert: "\n", attributes: {header: 4}},
+            {insert: "Level five"},
+            {insert: "\n", attributes: {header: 5}},
+            {insert: "Final level!"},
+            {insert: "\n", attributes: {header: 6}},
+        ]
+    });
+    t.deepEqual(actual, expected);
+});
+
 test('blockquote', t => {
     const expected = (
         '<blockquote>' +
