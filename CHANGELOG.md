@@ -1,5 +1,11 @@
 # Changelog
 
+# v1.1.1
+
+- Fix a bug where a `deltaToIntermediate` would forget a paragraph break
+if the preceding paragraph has no formatting, but the succeeding paragraph does. 
+See https://github.com/jfhr/deltaconvert/issues/11
+
 # v1.1.0
 
 - Add `htmlToNpf` and `npfToHtml`
