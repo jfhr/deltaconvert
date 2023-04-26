@@ -61,7 +61,9 @@ const DEFAULT_OPTIONS = {
 function deltaToIntermediate(delta, options = DEFAULT_OPTIONS) {
     const blocks = [];
 
-    for (const op of delta.ops) {
+    for (let opIndex = 0; opIndex < delta.ops.length; opIndex++) {
+        const op = delta.ops[opIndex];
+
         if (typeof op.insert === 'string') {
             // Test if string is only newline characters
             if (/^\n+$/g.test(op.insert)) {
@@ -82,10 +84,16 @@ function deltaToIntermediate(delta, options = DEFAULT_OPTIONS) {
                     lastBlock().children.push(new InlineInsert(paras.shift(), op.attributes));
                 }
 
-                for (const paragraph of paras) {
+                for (let paraIndex = 0; paraIndex < paras.length; paraIndex++){
+                    const paragraph = paras[paraIndex];
                     if (paragraph !== '') {
                         blocks.push(new BlockInsert(op.attributes));
                         lastBlock().children.push(new InlineInsert(paragraph, op.attributes));
+                    }
+                    // Fix #11: if this block insert ends in newlines, add a newline to the start of the next block
+                    // to make sure there's a paragraph break between the two blocks.
+                    else if (paraIndex === paras.length - 1 && typeof delta.ops[opIndex + 1]?.insert === 'string') {
+                        delta.ops[opIndex + 1].insert = '\n' + delta.ops[opIndex + 1].insert;
                     }
                 }
             } else {
