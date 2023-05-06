@@ -1,5 +1,11 @@
 # Changelog
 
+# v1.1.2
+
+- Properly handle extra whitespace in inline CSS styles in `htmlToDelta`
+e.g. `<span style=" color: #f5abb9 ">pink</span>` is correctly converted to
+`{insert: 'pink', attributes: {color: '#f5abb9'}},`
+
 # v1.1.1
 
 - Fix a bug where a `deltaToIntermediate` would forget a paragraph break
