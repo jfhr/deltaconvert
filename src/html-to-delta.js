@@ -269,7 +269,8 @@ function merge(objects) {
  * @returns {string|null} Property value, or null if unspecified.
  */
 function parseStyle(style, name) {
-    const styleFinder = new RegExp(`${name}\w*:\w*(?<value>.*?)(;|$)`);
+    debugger;
+    const styleFinder = new RegExp(`${name}\\s*:\\s*(?<value>.*?)\\s*(;|$)`);
     const match = styleFinder.exec(style);
     if (match === null) {
         return null;

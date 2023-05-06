@@ -92,6 +92,20 @@ test('inline styles', t => {
     t.deepEqual(actual, expected);
 });
 
+test('inline styles with additional whitespace', t => {
+    const actual = htmlToDelta('<span style="  font-weight  :  bold ; ">Gandalf</span>' +
+        '<span> the </span><span style=" color : #cccccc  ">Grey</span>');
+    const expected = {
+        ops: [
+            {insert: 'Gandalf', attributes: {bold: true}},
+            {insert: ' the '},
+            {insert: 'Grey', attributes: {color: '#cccccc'}},
+            {insert: '\n'},
+        ]
+    };
+    t.deepEqual(actual, expected);
+});
+
 test('bold link', t => {
     const actual = htmlToDelta('<p><a href="https://example.com" style="font-weight:bold;">' +
         'found this</a> for you</p>');
